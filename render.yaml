@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: epichms
+    runtime: node
+    plan: free
+    buildCommand: ""
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22.14.0
+      - key: PORT
+        value: 3000
