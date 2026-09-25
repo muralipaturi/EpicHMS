@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EpicHMS - Enterprise Hospital Management & EMR Platform</title>
+  <meta name="description" content="Complete enterprise hospital information system with 29 core modules, 5 user portals, public website, and built-in automation testing engine.">
+  
+  <!-- Modern Typography: Google Fonts Plus Jakarta Sans, Space Grotesk, Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 (CDN with fallback) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- EpicHMS Design System -->
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="theme-light">
+  <div id="app" class="app-layout">
+    
+    <!-- TOP HEADER -->
+    <header class="app-header" data-testid="app-header">
+      <div class="header-left">
+        <button id="sidebarToggleBtn" class="icon-btn" data-testid="sidebar-toggle-btn" title="Toggle Sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="brand-container" data-testid="brand-logo" onclick="app.navigate('public-site')">
+          <div class="brand-icon">
+            <i class="fa-solid fa-heart-pulse"></i>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">Epic<span class="brand-accent">HMS</span></span>
+            <span class="brand-subtitle">HEALTHCARE PLATFORM</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="global-search-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input 
+            type="text" 
+            id="globalSearchInput" 
+            data-testid="global-search-input" 
+            placeholder="Search patients, doctors, records, or appointments (Ctrl + K)..." 
+            autocomplete="off"
+          />
+          <div id="searchResultsDropdown" class="search-dropdown hidden" data-testid="search-results-dropdown"></div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Return to Landing Page Button -->
+        <button class="btn-header-public" onclick="app.navigate('public-site')" title="View Public Landing Page" data-testid="btn-header-public-site">
+          <i class="fa-solid fa-globe"></i> Public Site
+        </button>
+
+        <!-- Clean Role Switcher (Instant Switch to Role Portal) -->
+        <div class="role-switcher-box">
+          <label for="roleQuickSelect" class="role-label"><i class="fa-solid fa-user-shield"></i> Role:</label>
+          <select id="roleQuickSelect" class="form-select select-sm" data-testid="role-quick-select" onchange="app.switchRole(this.value)">
+            <option value="superadmin">Super Admin</option>
+            <option value="admin">Hospital Admin</option>
+            <option value="doctor">Doctor</option>
+            <option value="nurse">Nurse</option>
+            <option value="pharmacist">Pharmacist</option>
+            <option value="lab">Lab Staff</option>
+            <option value="radiology">Radiology Staff</option>
+            <option value="receptionist">Receptionist</option>
+            <option value="billing">Billing Staff</option>
+            <option value="inventory">Inventory Staff</option>
+            <option value="hr">HR Staff</option>
+            <option value="patient">Patient</option>
+          </select>
+          <button type="button" class="btn-role-login-header" onclick="app.switchRole(document.getElementById('roleQuickSelect')?.value)" title="Switch to selected role portal" data-testid="btn-header-login-role">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Switch
+          </button>
+        </div>
+
+        <!-- Notification Bell -->
+        <div class="notifications-wrapper">
+          <button id="notifBellBtn" class="icon-btn relative" data-testid="notifications-bell-btn" onclick="app.toggleNotifications()">
+            <i class="fa-regular fa-bell"></i>
+            <span id="notifBadge" class="badge-count" data-testid="notifications-badge">3</span>
+          </button>
+          <div id="notifDropdown" class="notif-dropdown hidden" data-testid="notifications-dropdown">
+            <div class="notif-header">
+              <h6>System Alerts & Notifications</h6>
+              <button class="text-btn" onclick="app.markAllNotifsRead()">Mark all read</button>
+            </div>
+            <div id="notifList" class="notif-list"></div>
+          </div>
+        </div>
+
+        <!-- User Profile Pill -->
+        <div class="user-pill" data-testid="user-profile-pill" onclick="app.promptRoleLogin()" title="Click to Switch Account or Login" style="cursor: pointer;">
+          <div class="user-avatar" id="headerUserAvatar">SA</div>
+          <div class="user-meta">
+            <span class="user-name" id="headerUserName">Super Admin</span>
+            <span class="user-role-tag" id="headerUserRole">Superadmin</span>
+          </div>
+          <button class="logout-btn-header" title="Sign Out to Landing Page" onclick="event.stopPropagation(); app.logout();" data-testid="btn-header-switch-user">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY: SIDEBAR + CONTENT -->
+    <div class="app-body">
+      <!-- SIDEBAR NAVIGATION -->
+      <aside class="app-sidebar" id="appSidebar" data-testid="app-sidebar">
+        <div class="sidebar-scroll" id="sidebarNavContainer" data-testid="sidebar-nav-container">
+          <!-- Dynamically populated based on active role -->
+        </div>
+      </aside>
+
+      <!-- MAIN VIEW CONTAINER -->
+      <main class="app-main" id="mainContent" data-testid="main-content">
+        <!-- Rendered dynamically by app.js -->
+        <div class="loader-container" id="pageLoader">
+          <div class="spinner"></div>
+          <p>Loading EpicHMS Module...</p>
+        </div>
+      </main>
+    </div>
+
+    <!-- ROLE AUTHENTICATION & LOGIN MODAL -->
+    <div id="roleLoginModal" class="auth-modal-backdrop hidden" data-testid="role-login-modal">
+      <div class="auth-modal-card">
+        <div class="auth-modal-header">
+          <div class="auth-modal-icon"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="auth-modal-header-text">
+            <h4 class="auth-modal-title" id="authModalTitle">Login as Role</h4>
+            <p class="auth-modal-subtitle">Select your role and sign in with demo credentials</p>
+          </div>
+          <button type="button" class="auth-close-btn" onclick="app.closeRoleLoginModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="roleLoginForm" onsubmit="app.handleRoleLoginSubmit(event)">
+          <div class="auth-modal-body">
+            <div class="form-group mb-3">
+              <label class="form-label text-xs uppercase font-semibold text-slate-500" for="authRoleSelect">
+                <i class="fa-solid fa-user-tag text-teal-600"></i> Select Role
+              </label>
+              <select id="authRoleSelect" class="form-select" onchange="app.onAuthRoleChange(this.value)" data-testid="auth-role-select">
+                <option value="doctor">Doctor &bull; OPD, IPD, EMR & e-Prescriptions</option>
+                <option value="nurse">Nurse &bull; Ward Care, Bed Matrix & Vitals</option>
+                <option value="receptionist">Receptionist &bull; Front Desk, OPD Queue & UHID</option>
+                <option value="admin">Hospital Admin &bull; Operations, Facilities & Waste</option>
+                <option value="superadmin">Super Admin &bull; Governance, Tenancy & Security</option>
+                <option value="pharmacist">Pharmacist &bull; Prescription Dispense & Stock</option>
+                <option value="lab">Lab Staff &bull; Diagnostic Pathology & Test Orders</option>
+                <option value="radiology">Radiology Staff &bull; Imaging Diagnostics & Scans</option>
+                <option value="billing">Billing Staff &bull; Invoicing, Advances & Cashier</option>
+                <option value="inventory">Inventory Staff &bull; Supply Chain, POs & Stock</option>
+                <option value="hr">HR Staff &bull; Employee Directory & Payroll</option>
+                <option value="patient">Patient &bull; Health Records & Personal Portal</option>
+              </select>
+              <input type="hidden" id="authTargetRole" value="doctor" />
+            </div>
+            <div class="form-group mb-3">
+              <label class="form-label text-xs uppercase font-semibold text-slate-500" for="authUsername">Username or Email</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-user input-icon"></i>
+                <input type="text" id="authUsername" class="form-control" required autocomplete="username" />
+              </div>
+            </div>
+            <div class="form-group mb-3">
+              <label class="form-label text-xs uppercase font-semibold text-slate-500" for="authPassword">Password</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <input type="password" id="authPassword" class="form-control" required placeholder="Enter password (demo: pass123)" autocomplete="current-password" />
+              </div>
+              <span class="text-xs text-muted mt-1 block">Demo credentials for all roles: password <code>pass123</code></span>
+            </div>
+            <div id="authErrorMsg" class="auth-error hidden"></div>
+          </div>
+          <div class="auth-modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="app.closeRoleLoginModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm" id="authSubmitBtn">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i> Login as Role
+            </button></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- EPIC AI CLINICAL TRIAGE DRAWER -->
+    <div id="epicAiTriageDrawer" class="epic-drawer-backdrop hidden" data-testid="epic-ai-triage-drawer" onclick="if(event.target === this) app.closeEpicAiTriageDrawer()">
+      <div class="epic-drawer-panel">
+        <div class="epic-drawer-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="epic-ai-avatar">
+              <i class="fa-solid fa-robot"></i>
+              <span class="pulse-online"></span>
+            </div>
+            <div>
+              <h4 class="epic-drawer-title">DR. EPIC AI <span class="triage-badge">CLINICAL TRIAGE</span></h4>
+              <p class="epic-drawer-subtitle">Automated Acuity Assessment & Specialist Referral</p>
+            </div>
+          </div>
+          <button type="button" class="epic-drawer-close" onclick="app.closeEpicAiTriageDrawer()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="epic-drawer-body">
+          <div class="triage-intro-box">
+            <i class="fa-solid fa-circle-info text-teal-600"></i>
+            <span>Select present symptoms to receive immediate triage classification, department guidance, and specialist routing.</span>
+          </div>
+
+          <div class="triage-section-title">COMMON PRESENTING SYMPTOMS</div>
+          <div class="triage-symptoms-grid" id="triageSymptomsGrid">
+            <!-- Populated dynamically by app.js -->
+          </div>
+
+          <!-- Live Triage Evaluation Result Card -->
+          <div id="triageAssessmentCard" class="triage-assessment-card">
+            <div class="triage-card-header">
+              <span class="triage-eval-tag">TRIAGE EVALUATION</span>
+              <span id="triageUrgencyBadge" class="urgency-badge urgency-optimal">AWAITING SELECTION</span>
+            </div>
+            <h5 id="triageChiefComplaint" class="triage-complaint-title">Select a symptom above</h5>
+            <p id="triageRecommendationText" class="triage-recommendation">Select one of the symptoms above to initiate immediate clinical guidance and determine appointment priority.</p>
+            
+            <div class="triage-routing-box">
+              <div>
+                <span class="routing-label">RECOMMENDED DEPARTMENT</span>
+                <strong id="triageDepartment" class="routing-val">—</strong>
+              </div>
+              <div>
+                <span class="routing-label">CHIEF SPECIALIST</span>
+                <strong id="triageDoctor" class="routing-val">—</strong>
+              </div>
+            </div>
+
+            <div class="triage-actions" id="triageActionButtons">
+              <button type="button" class="btn btn-teal btn-sm w-full" onclick="app.bookFromTriage()" id="btnTriageBook">
+                <i class="fa-solid fa-calendar-check"></i> Book Consultation
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 24/7 EMERGENCY MODAL -->
+    <div id="epicEmergencyModal" class="epic-modal-backdrop hidden" data-testid="epic-emergency-modal" onclick="if(event.target === this) app.closeEmergencyModal()">
+      <div class="epic-emergency-dialog">
+        <div class="emergency-dialog-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="emergency-alarm-pulse"><i class="fa-solid fa-truck-medical"></i></span>
+            <div>
+              <h4 style="margin: 0; font-size: 18px; font-weight: 800; color: #ffffff;">24/7 EMERGENCY & LEVEL-1 TRAUMA</h4>
+              <p style="margin: 0; font-size: 11px; font-family: var(--font-mono); color: #fecdd3;">ZERO TRIAGE DELAY &bull; EPIC HMS RESUSCITATION WING</p>
+            </div>
+          </div>
+          <button type="button" class="emergency-close-btn" onclick="app.closeEmergencyModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="emergency-dialog-body">
+          <div class="emergency-hotline-banner">
+            <div style="font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: #991b1b; letter-spacing: 0.1em; text-transform: uppercase;">DIRECT CRITICAL HOTLINE</div>
+            <a href="tel:1066" class="emergency-hotline-number">1066 / +91 40 6833 4455</a>
+            <span style="font-size: 11px; color: #b91c1c;">Dedicated Trauma Dispatch &bull; Toll-Free 24 Hours</span>
+          </div>
+
+          <div class="emergency-dispatch-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="font-mono-clinical text-xs font-bold text-slate-800"><i class="fa-solid fa-satellite-dish text-rose-600"></i> GPS AMBULANCE FLEET</span>
+              <span class="status-pill status-active font-mono-clinical text-xs">8 UNITS ON PATROL</span>
+            </div>
+            <p class="text-xs text-slate-600 mb-3">Instant ambulance telemetry with onboard ventilator, cardiac monitor, and advanced life support (ALS) paramedic crew.</p>
+            <button type="button" class="btn-dispatch-ambulance" id="btnDispatchAmbulance" onclick="app.triggerAmbulanceDispatch()">
+              <i class="fa-solid fa-bell"></i> Request Immediate Ambulance Dispatch
+            </button>
+            <div id="dispatchSuccessMsg" class="dispatch-alert hidden">
+              <i class="fa-solid fa-circle-check text-emerald-600"></i> Ambulance Unit dispatched! Estimated response: <strong>6 mins</strong>. Our medical control is dialing your phone.
+            </div>
+          </div>
+
+          <div class="emergency-campus-info">
+            <div class="campus-point">
+              <i class="fa-solid fa-location-dot text-rose-600"></i>
+              <div>
+                <strong>Trauma Entrance: Bay B-06</strong><br>
+                <span>Ground Level, North Wing, EpicHMS Medical Boulevard, Gachibowli</span>
+              </div>
+            </div>
+            <div class="campus-point">
+              <i class="fa-solid fa-heart-pulse text-rose-600"></i>
+              <div>
+                <strong>Cardiac Cath Lab & CT Angio:</strong><br>
+                <span>Standby 24/7 with zero-prep door-to-balloon protocol (< 45 mins).</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="emergency-dialog-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="app.closeEmergencyModal()">Close Window</button>
+          <a href="#appointment" class="btn btn-primary btn-sm" onclick="app.closeEmergencyModal()">Book Standard Outpatient Visit</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container" data-testid="toast-container"></div>
+
+  </div>
+
+  <!-- APPLICATION SCRIPTS -->
+  <script src="/js/three.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# Database runtime locks and WAL
+server/*.db-shm
+server/*.db-wal
+
+# Logs & temp
+*.log
+scratch/
+test_output.txt
+test_results.txt
+test_utf8.txt
+
+# OS metadata
+.DS_Store
+Thumbs.db

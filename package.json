@@ -1,0 +1,25 @@
+{
+  "name": "epichms",
+  "version": "1.0.0",
+  "description": "EpicHMS - Enterprise Hospital Management & EMR Platform for Automation Testing",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "node tests/test-runner.js",
+    "seed": "node server/seed.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "keywords": [
+    "epichms",
+    "hospital-management",
+    "emr",
+    "automation-testing",
+    "playwright",
+    "selenium",
+    "cypress"
+  ],
+  "author": "EpicHMS Engineering",
+  "license": "MIT"
+}
