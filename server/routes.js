@@ -1,6 +1,23 @@
 const { queryAll, queryOne, execute, getDb } = require('./db');
 const { seedDatabase, hashPassword } = require('./seed');
 
+function getUserFromRequest(req) {
+  const auth = req.headers['authorization'];
+  if (!auth || !auth.startsWith('Bearer epichms_token_')) return null;
+  const base64Str = auth.replace('Bearer epichms_token_', '');
+  try {
+    const decoded = Buffer.from(base64Str, 'base64').toString('utf8');
+    const parts = decoded.split(':');
+    if (parts.length >= 2) {
+      const id = parseInt(parts[0], 10);
+      const email = parts[1];
+      const user = queryOne('SELECT * FROM users WHERE id = ? AND email = ?', [id, email]);
+      return user;
+    }
+  } catch(e) { return null; }
+  return null;
+}
+
 function registerRoutes(router) {
   // --- HEALTH & PING ---
   router.get('/api/health', (req, res) => {
@@ -241,14 +258,28 @@ function registerRoutes(router) {
 
   // --- MODULE 1: PATIENT MANAGEMENT ---
   router.get('/api/patients', (req, res) => {
+    const user = getUserFromRequest(req);
     const search = req.query.search;
     let query = 'SELECT * FROM patients';
     let params = [];
-    if (search) {
-      query += ' WHERE first_name LIKE ? OR last_name LIKE ? OR phone LIKE ? OR patient_code LIKE ? OR uhid LIKE ?';
-      const term = `%${search}%`;
-      params = [term, term, term, term, term];
+    
+    let whereConditions = [];
+    
+    if (user && user.role === 'patient') {
+      whereConditions.push('email = ?');
+      params.push(user.email);
     }
+    
+    if (search) {
+      whereConditions.push('(first_name LIKE ? OR last_name LIKE ? OR phone LIKE ? OR patient_code LIKE ? OR uhid LIKE ?)');
+      const term = `%${search}%`;
+      params.push(term, term, term, term, term);
+    }
+    
+    if (whereConditions.length > 0) {
+      query += ' WHERE ' + whereConditions.join(' AND ');
+    }
+    
     query += ' ORDER BY id DESC';
     res.json(queryAll(query, params));
   });
@@ -289,6 +320,28 @@ function registerRoutes(router) {
 
   // --- MODULE 2: APPOINTMENT MANAGEMENT ---
   router.get('/api/appointments', (req, res) => {
+    const user = getUserFromRequest(req);
+    let whereClause = '';
+    let params = [];
+    
+    if (user && user.role === 'doctor') {
+      const doc = queryOne('SELECT id FROM doctors WHERE full_name = ?', [user.full_name]);
+      if (doc) {
+        whereClause = ' WHERE a.doctor_id = ? ';
+        params.push(doc.id);
+      } else {
+        whereClause = ' WHERE a.id = -1 '; // doctor record not found
+      }
+    } else if (user && user.role === 'patient') {
+      const pat = queryOne('SELECT id FROM patients WHERE email = ?', [user.email]);
+      if (pat) {
+        whereClause = ' WHERE a.patient_id = ? ';
+        params.push(pat.id);
+      } else {
+        whereClause = ' WHERE a.id = -1 '; // patient record not found
+      }
+    }
+
     const appts = queryAll(`
       SELECT a.*, 
              p.first_name || ' ' || p.last_name as patient_name, p.phone as patient_phone, p.patient_code,
@@ -298,8 +351,9 @@ function registerRoutes(router) {
       JOIN patients p ON a.patient_id = p.id
       JOIN doctors d ON a.doctor_id = d.id
       LEFT JOIN departments dept ON a.department_id = dept.id
+      ${whereClause}
       ORDER BY a.appointment_date DESC, a.id DESC
-    `);
+    `, params);
     res.json(appts);
   });
 
@@ -326,6 +380,28 @@ function registerRoutes(router) {
 
   // --- MODULE 3: OPD MANAGEMENT ---
   router.get('/api/opd/queue', (req, res) => {
+    const user = getUserFromRequest(req);
+    let whereClause = '';
+    let params = [];
+    
+    if (user && user.role === 'doctor') {
+      const doc = queryOne('SELECT id FROM doctors WHERE full_name = ?', [user.full_name]);
+      if (doc) {
+        whereClause = ' WHERE q.doctor_id = ? ';
+        params.push(doc.id);
+      } else {
+        whereClause = ' WHERE q.id = -1 ';
+      }
+    } else if (user && user.role === 'patient') {
+      const pat = queryOne('SELECT id FROM patients WHERE email = ?', [user.email]);
+      if (pat) {
+        whereClause = ' WHERE q.patient_id = ? ';
+        params.push(pat.id);
+      } else {
+        whereClause = ' WHERE q.id = -1 ';
+      }
+    }
+
     const queue = queryAll(`
       SELECT q.*, 
              p.patient_code, p.first_name || ' ' || p.last_name as patient_name, p.gender, p.age,
@@ -333,8 +409,9 @@ function registerRoutes(router) {
       FROM opd_queue q
       JOIN patients p ON q.patient_id = p.id
       JOIN doctors d ON q.doctor_id = d.id
+      ${whereClause}
       ORDER BY q.token_no ASC
-    `);
+    `, params);
     res.json(queue);
   });
 
@@ -439,6 +516,28 @@ function registerRoutes(router) {
   });
 
   router.get('/api/pharmacy/prescriptions', (req, res) => {
+    const user = getUserFromRequest(req);
+    let whereClause = '';
+    let params = [];
+    
+    if (user && user.role === 'doctor') {
+      const doc = queryOne('SELECT id FROM doctors WHERE full_name = ?', [user.full_name]);
+      if (doc) {
+        whereClause = ' WHERE rx.doctor_id = ? ';
+        params.push(doc.id);
+      } else {
+        whereClause = ' WHERE rx.id = -1 ';
+      }
+    } else if (user && user.role === 'patient') {
+      const pat = queryOne('SELECT id FROM patients WHERE email = ?', [user.email]);
+      if (pat) {
+        whereClause = ' WHERE rx.patient_id = ? ';
+        params.push(pat.id);
+      } else {
+        whereClause = ' WHERE rx.id = -1 ';
+      }
+    }
+
     const rxs = queryAll(`
       SELECT rx.*, 
              p.patient_code, p.first_name || ' ' || p.last_name as patient_name,
@@ -446,8 +545,9 @@ function registerRoutes(router) {
       FROM prescriptions rx
       JOIN patients p ON rx.patient_id = p.id
       JOIN doctors d ON rx.doctor_id = d.id
+      ${whereClause}
       ORDER BY rx.id DESC
-    `);
+    `, params);
     for (const r of rxs) {
       r.items = queryAll(`
         SELECT pi.*, drug.drug_name, drug.unit_price, drug.stock_qty
@@ -683,6 +783,28 @@ function registerRoutes(router) {
 
   // --- MODULE 18: MEDICAL RECORDS / EMR ---
   router.get('/api/emr/records', (req, res) => {
+    const user = getUserFromRequest(req);
+    let whereClause = '';
+    let params = [];
+    
+    if (user && user.role === 'doctor') {
+      const doc = queryOne('SELECT id FROM doctors WHERE full_name = ?', [user.full_name]);
+      if (doc) {
+        whereClause = ' WHERE em.doctor_id = ? ';
+        params.push(doc.id);
+      } else {
+        whereClause = ' WHERE em.id = -1 ';
+      }
+    } else if (user && user.role === 'patient') {
+      const pat = queryOne('SELECT id FROM patients WHERE email = ?', [user.email]);
+      if (pat) {
+        whereClause = ' WHERE em.patient_id = ? ';
+        params.push(pat.id);
+      } else {
+        whereClause = ' WHERE em.id = -1 ';
+      }
+    }
+
     const emr = queryAll(`
       SELECT em.*, 
              p.patient_code, p.first_name || ' ' || p.last_name as patient_name,
@@ -690,8 +812,9 @@ function registerRoutes(router) {
       FROM medical_records em
       JOIN patients p ON em.patient_id = p.id
       JOIN doctors d ON em.doctor_id = d.id
+      ${whereClause}
       ORDER BY em.id DESC
-    `);
+    `, params);
     res.json(emr);
   });
 
