@@ -16,6 +16,7 @@
   
   <!-- EpicHMS Design System -->
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/mobile.css">
 </head>
 <body class="theme-light">
   <div id="app" class="app-layout">
@@ -23,7 +24,7 @@
     <!-- TOP HEADER -->
     <header class="app-header" data-testid="app-header">
       <div class="header-left">
-        <button id="sidebarToggleBtn" class="icon-btn" data-testid="sidebar-toggle-btn" title="Toggle Sidebar">
+        <button id="sidebarToggleBtn" class="icon-btn" data-testid="sidebar-toggle-btn" title="Toggle Sidebar" onclick="document.getElementById('appSidebar').classList.toggle('mobile-open'); document.getElementById('appSidebar').classList.toggle('collapsed');">
           <i class="fa-solid fa-bars"></i>
         </button>
         <div class="brand-container" data-testid="brand-logo" onclick="app.navigate('public-site')">

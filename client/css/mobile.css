@@ -1,0 +1,164 @@
+/* ==========================================================================
+   EpicHMS - Mobile Responsiveness
+   ========================================================================== */
+
+@media screen and (max-width: 1024px) {
+  .app-sidebar {
+    position: absolute;
+    z-index: 90;
+    height: 100%;
+    transform: translateX(-100%);
+  }
+  
+  .app-sidebar.mobile-open {
+    transform: translateX(0);
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+  }
+  
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .header-center {
+    display: none; /* Hide global search on smaller screens for simplicity */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .app-header {
+    padding: 0 12px;
+  }
+  
+  .header-right .role-switcher-box,
+  .header-right .btn-header-public {
+    display: none; /* Hide on mobile to save space */
+  }
+  
+  .brand-title {
+    font-size: 18px;
+  }
+  
+  .brand-subtitle {
+    display: none;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-main {
+    padding: 16px 12px 32px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .page-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .auth-modal-card {
+    width: 95%;
+    max-width: none;
+    margin: 20px auto;
+  }
+
+  .epic-drawer-panel {
+    width: 100%;
+    max-width: none;
+  }
+
+  .triage-symptoms-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .emergency-dialog-header h4 {
+    font-size: 14px;
+  }
+
+  .card-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .user-pill {
+    padding: 4px;
+  }
+
+  .user-meta {
+    display: none; /* Hide user name and role on mobile, keep avatar */
+  }
+
+  .epic-ai-fab-text, 
+  .epic-ai-fab .fab-sub {
+    display: none !important;
+  }
+
+  .epic-ai-fab {
+    padding: 14px;
+    border-radius: 50%;
+    bottom: 20px;
+    right: 20px;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4);
+  }
+
+  body.is-public-site .app-main {
+    padding: 0 !important;
+  }
+
+  .landing-view-container {
+    margin: 0 !important;
+    width: 100% !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .landing-hero, .landing-section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .public-navbar {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+html, body, .app-layout, .app-body, .app-main {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+@media screen and (max-width: 480px) {
+  .triage-symptoms-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .kpi-card {
+    padding: 12px;
+  }
+
+  .kpi-icon-box {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+  }
+}
