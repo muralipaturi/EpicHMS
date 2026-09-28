@@ -134,31 +134,14 @@
         <div class="auth-modal-header">
           <div class="auth-modal-icon"><i class="fa-solid fa-user-shield"></i></div>
           <div class="auth-modal-header-text">
-            <h4 class="auth-modal-title" id="authModalTitle">Login as Role</h4>
-            <p class="auth-modal-subtitle">Select your role and sign in with demo credentials</p>
+            <h4 class="auth-modal-title" id="authModalTitle">Login to EpicHMS</h4>
+            <p class="auth-modal-subtitle">Enter your username and password</p>
           </div>
           <button type="button" class="auth-close-btn" onclick="app.closeRoleLoginModal()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form id="roleLoginForm" onsubmit="app.handleRoleLoginSubmit(event)">
           <div class="auth-modal-body">
-            <div class="form-group mb-3">
-              <label class="form-label text-xs uppercase font-semibold text-slate-500" for="authRoleSelect">
-                <i class="fa-solid fa-user-tag text-teal-600"></i> Select Role
-              </label>
-              <select id="authRoleSelect" class="form-select" onchange="app.onAuthRoleChange(this.value)" data-testid="auth-role-select">
-                <option value="doctor">Doctor &bull; OPD, IPD, EMR & e-Prescriptions</option>
-                <option value="nurse">Nurse &bull; Ward Care, Bed Matrix & Vitals</option>
-                <option value="receptionist">Receptionist &bull; Front Desk, OPD Queue & UHID</option>
-                <option value="admin">Hospital Admin &bull; Operations, Facilities & Waste</option>
-                <option value="superadmin">Super Admin &bull; Governance, Tenancy & Security</option>
-                <option value="pharmacist">Pharmacist &bull; Prescription Dispense & Stock</option>
-                <option value="lab">Lab Staff &bull; Diagnostic Pathology & Test Orders</option>
-                <option value="radiology">Radiology Staff &bull; Imaging Diagnostics & Scans</option>
-                <option value="billing">Billing Staff &bull; Invoicing, Advances & Cashier</option>
-                <option value="inventory">Inventory Staff &bull; Supply Chain, POs & Stock</option>
-                <option value="hr">HR Staff &bull; Employee Directory & Payroll</option>
-                <option value="patient">Patient &bull; Health Records & Personal Portal</option>
-              </select>
+            <div class="form-group mb-3 hidden">
               <input type="hidden" id="authTargetRole" value="doctor" />
             </div>
             <div class="form-group mb-3">
@@ -181,7 +164,7 @@
           <div class="auth-modal-footer">
             <button type="button" class="btn btn-secondary btn-sm" onclick="app.closeRoleLoginModal()">Cancel</button>
             <button type="submit" class="btn btn-primary btn-sm" id="authSubmitBtn">
-              <i class="fa-solid fa-arrow-right-to-bracket"></i> Login as Role
+              <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
             </button></div>
         </form>
       </div>

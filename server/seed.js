@@ -71,6 +71,11 @@ function seedDatabase() {
     { username: 'superadmin', email: 'superadmin@epichms.local', role: 'superadmin', full_name: 'Dr. Arthur Sterling', dept: 'Executive Suite', phone: '+1-555-0100', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
     { username: 'admin', email: 'admin@epichms.local', role: 'admin', full_name: 'Clara Oswald', dept: 'Hospital Administration', phone: '+1-555-0101', acct: 'Active', emp: 'Full-Time', clin: 'Off-Duty' },
     { username: 'doctor', email: 'doctor@epichms.local', role: 'doctor', full_name: 'Dr. Evelyn Reed, MD', dept: 'Cardiology & Vascular', phone: '+1-555-0102', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
+    { username: 'doc_marcus', email: 'marcus@epichms.local', role: 'doctor', full_name: 'Dr. Marcus Vance, MD', dept: 'Neurology & Neurosurgery', phone: '+1-555-0112', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
+    { username: 'doc_robert', email: 'robert@epichms.local', role: 'doctor', full_name: 'Dr. Robert Miller, MS', dept: 'Orthopedics', phone: '+1-555-0113', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
+    { username: 'doc_sophia', email: 'sophia@epichms.local', role: 'doctor', full_name: 'Dr. Sophia Martinez, MD', dept: 'Pediatrics', phone: '+1-555-0114', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
+    { username: 'doc_gregory', email: 'gregory@epichms.local', role: 'doctor', full_name: 'Dr. Gregory Chase, MBBS', dept: 'Emergency', phone: '+1-555-0115', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
+    { username: 'doc_laura', email: 'laura@epichms.local', role: 'doctor', full_name: 'Dr. Laura Palmer, MD', dept: 'Internal Medicine', phone: '+1-555-0116', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
     { username: 'nurse', email: 'nurse@epichms.local', role: 'nurse', full_name: 'Sarah Jenkins, RN', dept: 'Inpatient Nursing / ICU', phone: '+1-555-0103', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
     { username: 'pharmacist', email: 'pharmacist@epichms.local', role: 'pharmacist', full_name: 'James Chen, PharmD', dept: 'Central Pharmacy', phone: '+1-555-0104', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
     { username: 'lab', email: 'lab@epichms.local', role: 'lab', full_name: 'Dr. Julian Bashir, MSc', dept: 'Pathology & Clinical Lab', phone: '+1-555-0107', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
@@ -80,8 +85,14 @@ function seedDatabase() {
     { username: 'inventory', email: 'inventory@epichms.local', role: 'inventory', full_name: 'Vikram Patel', dept: 'Supply Chain & Procurement', phone: '+1-555-0110', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
     { username: 'hr', email: 'hr@epichms.local', role: 'hr', full_name: 'Beatrice Stone', dept: 'Human Resources & Talent', phone: '+1-555-0111', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
     { username: 'patient', email: 'patient@epichms.local', role: 'patient', full_name: 'Johnathan Vance', dept: 'Outpatient Services', phone: '+1-555-0105', acct: 'Active', emp: 'Full-Time', clin: 'Off-Duty' },
-    // Backward compatibility for legacy tests
-    { username: 'staff', email: 'staff@epichms.local', role: 'staff', full_name: 'Alice Walker', dept: 'Front Desk Operations', phone: '+1-555-0106', acct: 'Active', emp: 'Full-Time', clin: 'Available' }
+    { username: 'patient_eleanor', email: 'eleanor@epichms.local', role: 'patient', full_name: 'Eleanor Rigby', dept: 'Outpatient Services', phone: '+1-555-0117', acct: 'Active', emp: 'Full-Time', clin: 'Off-Duty' },
+    { username: 'patient_michael', email: 'michael@epichms.local', role: 'patient', full_name: 'Michael Corleone', dept: 'Outpatient Services', phone: '+1-555-0118', acct: 'Active', emp: 'Full-Time', clin: 'Off-Duty' },
+    { username: 'patient_aria', email: 'aria@epichms.local', role: 'patient', full_name: 'Aria Stark', dept: 'Outpatient Services', phone: '+1-555-0119', acct: 'Active', emp: 'Full-Time', clin: 'Off-Duty' },
+    { username: 'patient_david', email: 'david@epichms.local', role: 'patient', full_name: 'David Copperfield', dept: 'Outpatient Services', phone: '+1-555-0120', acct: 'Active', emp: 'Full-Time', clin: 'Off-Duty' },
+    { username: 'patient_beatrice', email: 'beatrice.p@epichms.local', role: 'patient', full_name: 'Beatrice Prior', dept: 'Outpatient Services', phone: '+1-555-0121', acct: 'Active', emp: 'Full-Time', clin: 'Off-Duty' },
+    { username: 'staff', email: 'staff@epichms.local', role: 'staff', full_name: 'Alice Walker', dept: 'Front Desk Operations', phone: '+1-555-0106', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
+    { username: 'staff_bob', email: 'bob@epichms.local', role: 'staff', full_name: 'Bob Builder', dept: 'Maintenance', phone: '+1-555-0122', acct: 'Active', emp: 'Full-Time', clin: 'Available' },
+    { username: 'staff_charlie', email: 'charlie@epichms.local', role: 'staff', full_name: 'Charlie Chaplin', dept: 'Security', phone: '+1-555-0123', acct: 'Active', emp: 'Full-Time', clin: 'Available' }
   ];
 
   const insertUser = db.prepare(`

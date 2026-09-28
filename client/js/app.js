@@ -522,7 +522,7 @@ const app = {
     if (quickSelect) quickSelect.value = role;
 
     // Prepopulate with default role username and demo password
-    if (usernameInput) usernameInput.value = role;
+    if (usernameInput) usernameInput.value = '';
     if (passwordInput) {
       passwordInput.value = 'pass123';
       setTimeout(() => passwordInput.focus(), 100);
